@@ -1,0 +1,27 @@
+{
+  "uuid": "79cded93-9213-421a-8ff9-b7133b03a15f",
+  "shortName": "Password Generator",
+  "longName": "Password Generator",
+  "companyName": "stream-suite",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "enableMultiJS": true,
+  "targetPlatforms": [
+    "basalt",
+    "chalk",
+    "diorite"
+  ],
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": [
+    "APP_READY",
+    "LOCK_STATE",
+    "LOCK_UUID",
+    "ACCESS_TOKEN"
+  ],
+  "resources": {
+    "media": []
+  }
+}
