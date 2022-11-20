@@ -1,4 +1,7 @@
 #include <pebble.h>
+#include <stdlib.h>
+#include <math.h>
+
 #include "app.h"
 
 // Virtual Lockitron settings (https://api.lockitron.com/v1/getting_started/virtual_locks)
@@ -126,7 +129,8 @@ static void prv_update_app_glance(AppGlanceReloadSession *session, size_t limit,
 
   // Generate a friendly message for the current Lockitron state
   char str[50];
-  snprintf(str, sizeof(str), "%s", prv_lockitron_status_message(lockitron_state));
+  //snprintf(str, sizeof(str), "%s", prv_lockitron_status_message(lockitron_state));
+  snprintf(str, sizeof(str), "%lu", prv_random_number(1, 100));
   APP_LOG(APP_LOG_LEVEL_INFO, "STATE: %s", str);
 
   // Create the AppGlanceSlice (no icon, no expiry)

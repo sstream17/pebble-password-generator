@@ -1,5 +1,3 @@
-import { generatePassword } from "./generate-password";
-
 Pebble.addEventListener('ready', function (e) {
     Pebble.sendAppMessage({ 'APP_READY': true });
 });
@@ -10,8 +8,8 @@ Pebble.addEventListener('appmessage', function (dict) {
     }
 });
 
-async function toggleLockitronState(lock_uuid, access_token) {
-    var password = await generatePassword();
+function toggleLockitronState(lock_uuid, access_token) {
+    var password = 'lock';
     sendResultToPebble({ state: password });
 
     // xhrWrapper(url, 'put', json, function(req) {

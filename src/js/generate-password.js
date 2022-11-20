@@ -1,5 +1,3 @@
-import { randomNumber } from "./random-number";
-
 const DefaultOptions = {
     length: 14,
     ambiguous: false,
@@ -18,7 +16,7 @@ const DefaultOptions = {
     includeNumber: false,
 };
 
-export async function generatePassword(options) {
+export function generatePassword(options) {
     // overload defaults with given options
     const o = Object.assign({}, DefaultOptions, options);
 
@@ -60,7 +58,7 @@ export async function generatePassword(options) {
     }
 
     // shuffle
-    await shuffleArray(positions);
+    shuffleArray(positions);
 
     // build out the char sets
     let allCharSet = "";
@@ -117,14 +115,14 @@ export async function generatePassword(options) {
                 break;
         }
 
-        const randomCharIndex = await randomNumber(0, positionChars.length - 1);
+        const randomCharIndex = randomNumber(0, positionChars.length - 1);
         password += positionChars.charAt(randomCharIndex);
     }
 
     return password;
 }
 
-async function generatePassphrase(options) {
+function generatePassphrase(options) {
     const o = Object.assign({}, DefaultOptions, options);
 
     if (o.numWords == null || o.numWords <= 2) {
@@ -143,7 +141,7 @@ async function generatePassphrase(options) {
     const listLength = EFFLongWordList.length - 1;
     const wordList = new Array(o.numWords);
     for (let i = 0; i < o.numWords; i++) {
-        const wordIndex = await randomNumber(0, listLength);
+        const wordIndex = randomNumber(0, listLength);
         if (o.capitalize) {
             wordList[i] = capitalize(EFFLongWordList[wordIndex]);
         } else {
@@ -152,7 +150,7 @@ async function generatePassphrase(options) {
     }
 
     if (o.includeNumber) {
-        await appendRandomNumberToRandomWord(wordList);
+        appendRandomNumberToRandomWord(wordList);
     }
     return wordList.join(o.wordSeparator);
 }
@@ -161,12 +159,12 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-async function appendRandomNumberToRandomWord() {
+function appendRandomNumberToRandomWord() {
     if (wordList == null || wordList.length <= 0) {
         return;
     }
-    const index = await this.cryptoService.randomNumber(0, wordList.length - 1);
-    const num = await this.cryptoService.randomNumber(0, 9);
+    const index = this.cryptoService.randomNumber(0, wordList.length - 1);
+    const num = this.cryptoService.randomNumber(0, 9);
     wordList[index] = wordList[index] + num;
 }
 
@@ -221,9 +219,50 @@ function sanitizePasswordLength(options, forGeneration) {
 }
 
 // ref: https://stackoverflow.com/a/12646864/1090359
-async function shuffleArray(array) {
+function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
-        const j = await randomNumber(0, i);
+        const j = randomNumber(0, i);
         [array[i], array[j]] = [array[j], array[i]];
     }
+}
+
+// EFForg/OpenWireless
+// ref https://github.com/EFForg/OpenWireless/blob/master/app/js/diceware.js
+function randomNumber(min, max) {
+    let rval = 0;
+    const range = max - min + 1;
+    const bitsNeeded = Math.ceil(Math.log2(range));
+    if (bitsNeeded > 53) {
+        throw new Error("We cannot generate numbers larger than 53 bits.");
+    }
+
+    const bytesNeeded = Math.ceil(bitsNeeded / 8);
+    const mask = Math.pow(2, bitsNeeded) - 1;
+    // 7776 -> (2^13 = 8192) -1 == 8191 or 0x00001111 11111111
+
+    // Fill a byte array with N random numbers
+    const byteArray = new Uint8Array(randomBytes(bytesNeeded));
+
+    let p = (bytesNeeded - 1) * 8;
+    for (let i = 0; i < bytesNeeded; i++) {
+        rval += byteArray[i] * Math.pow(2, p);
+        p -= 8;
+    }
+
+    // Use & to apply the mask and reduce the number of recursive lookups
+    rval = rval & mask;
+
+    if (rval >= range) {
+        // Integer out of acceptable range
+        return randomNumber(min, max);
+    }
+
+    // Return an integer that falls within the range
+    return min + rval;
+}
+
+function randomBytes(length) {
+    const arr = new Uint8Array(length);
+    self.crypto.getRandomValues(arr);
+    return arr.buffer;
 }

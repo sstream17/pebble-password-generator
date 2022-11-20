@@ -17,3 +17,6 @@ static void prv_init(void);
 static void prv_deinit(void);
 static void prv_window_load(Window *window);
 static void prv_window_unload(Window *window);
+
+unsigned long prv_random_number(unsigned long min, unsigned long max);
+//unsigned long *prv_random_bytes(size_t num_bytes);
